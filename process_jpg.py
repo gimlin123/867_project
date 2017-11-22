@@ -101,4 +101,3 @@ def create_training_dataset():
 #     model.add(Dense(26, activation='softmax'))
 
 create_training_dataset()
->>>>>>> 3187f3b80cec5b5cf727c777326a1cd3dc47f051
