@@ -13,16 +13,18 @@ import json
 
 #pre-processing methods
 def resample_picture(current_gsd, target_gsd, jpg_image):
+    print current_gsd
+    print target_gsd
     jpg_image_size = jpg_image.size
-    resized_image = jpg_image.resize((int(jpg_image_size[0] * current_gsd / target_gsd), int(jpg_image_size[1] * current_gsd / target_gsd)))
+    print jpg_image_size
+    print (int(jpg_image_size[0] * current_gsd / target_gsd), int(jpg_image_size[1] * current_gsd / target_gsd))
+    resized_image = jpg_image.resize(size = (int(jpg_image_size[0] * current_gsd / target_gsd), int(jpg_image_size[1] * current_gsd / target_gsd)))
     return resized_image
 
-def crop(bot_left, top_right, jpg_image):
-    # print "========"
-    # print bot_left
-    # print top_right
-    # print "========================"
-    cropped_image = jpg_image.crop(box=(bot_left[0], bot_left[1], top_right[0], top_right[1]))
+def crop(top_left, size, jpg_image):
+    print top_left
+    print size
+    cropped_image = jpg_image.crop(box=(top_left[0], top_left[1], top_left[0] + size[0], top_left[1] + size[1]))
     # cropped_image = jpg_image.crop(box=(0, 0, 100, 100))
     return cropped_image
 
@@ -85,17 +87,17 @@ def create_training_dataset():
                             print(img_size)
                             print(len(img))
 
-                            cropped_img = crop((bounding_box[2] / 2, bounding_box[3] / 2), ((bounding_box[0] + img_size[0]) / 5, (bounding_box[1] + img_size[1]) / 5), img)
-                            resized_img = resample_picture(meta['gsd'], 1.7, cropped_img)
-                            # if resized_img.size[0] > max_width:
-                            #     max_width = resized_img.size[0]
-                            #
-                            # if resized_img.size[1] > max_height:
-                            #     max_height = resized_img.size[1]
+                            img = crop((bounding_box[0], bounding_box[1]), (bounding_box[2], bounding_box[3]), img)
+                            img = resample_picture(meta['gsd'], 1.7, img)
+                            if resized_img.size[0] > max_width:
+                                max_width = resized_img.size[0]
+
+                            if resized_img.size[1] > max_height:
+                                max_height = resized_img.size[1]
                             # # print len(list(resized_img.getdata()))
-                            padded_data = np.zeros((2500, 2500, 3))
-                            padded_data[:resized_img.size[1], :resized_img.size[0] , :] = np.array(resized_img.getdata()).reshape(resized_img.size[1], resized_img.size[0], 3)
-                            training_data.append(padded_data)
+                            # padded_data = np.zeros((2500, 2500, 3))
+                            # padded_data[:resized_img.size[1], :resized_img.size[0] , :] = np.array(resized_img.getdata()).reshape(resized_img.size[1], resized_img.size[0], 3)
+                            # training_data.append(padded_data)
                             # training_data.append(np.array(resized_img.getdata()).reshape(resized_img.size[1], resized_img.size[0], 3))
                             # # print np.fromstring(resized_img.tobytes(), dtype=np.uint8)
 
