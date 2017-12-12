@@ -54,7 +54,7 @@ def train_neural_net(neural_net):
 
 # max gsd seem to be around 1.7 for this dataset
 def create_training_dataset():
-    root = '../train'
+    root = 'D:/fMoW-rgb/val'
     target_gsd = 1.7
     max_width = 0
     max_height = 0
@@ -68,7 +68,7 @@ def create_training_dataset():
             for (dirpath2, dirnames2, filenames2) in walk(os.path.join(root, dirname)):
                 for dirname2 in dirnames2:
                     if int(dirname2.split('_')[-1]) <= 100:
-                        print dirname2
+                        print (dirname2)
                         for (dirpath3, dirnames3, filenames3) in walk(os.path.join(root, dirname, dirname2)):
                             img_filename = ""
                             meta_filename = ""
@@ -80,9 +80,10 @@ def create_training_dataset():
 
                             meta = json.load(open(os.path.join(root, dirname, dirname2, meta_filename)))
                             bounding_box = meta['bounding_boxes'][0]['box']
-
-                            img = openJPGImg(os.path.join(root, dirname, dirname2, img_filename))
+                            img = openJPGImg(os.path.join(root, dirname, dirname2, img_filename)).copy()
                             img_size = img.size
+                            print(img_size)
+                            print(len(img))
 
                             cropped_img = crop((bounding_box[2] / 2, bounding_box[3] / 2), ((bounding_box[0] + img_size[0]) / 5, (bounding_box[1] + img_size[1]) / 5), img)
                             resized_img = resample_picture(meta['gsd'], 1.7, cropped_img)
@@ -99,7 +100,7 @@ def create_training_dataset():
                             # # print np.fromstring(resized_img.tobytes(), dtype=np.uint8)
 
             training_data = np.array(training_data)
-            np.save("processed_data/resized_img_data_training_" + dirname, training_data)
+            np.save("processed_data/resized_img_data_val_" + dirname, training_data)
 
 create_training_dataset()
 
@@ -118,8 +119,8 @@ def make_training_matrices():
                     index += 1
 
         for filename in filenames:
-            print filename
-            print np.load(os.path.join(root, filename))
+            print (filename)
+            print (np.load(os.path.join(root, filename)))
             training_data.append(np.load(os.path.join(root, filename)))
             labels.append(dict[filename.split('_')[-2]])
 
