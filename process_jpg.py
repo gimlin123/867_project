@@ -13,17 +13,12 @@ import json
 
 #pre-processing methods
 def resample_picture(current_gsd, target_gsd, jpg_image):
-    print current_gsd
-    print target_gsd
     jpg_image_size = jpg_image.size
-    print jpg_image_size
     print (int(jpg_image_size[0] * current_gsd / target_gsd), int(jpg_image_size[1] * current_gsd / target_gsd))
     resized_image = jpg_image.resize(size = (int(jpg_image_size[0] * current_gsd / target_gsd), int(jpg_image_size[1] * current_gsd / target_gsd)))
     return resized_image
 
 def crop(top_left, size, jpg_image):
-    print top_left
-    print size
     cropped_image = jpg_image.crop(box=(top_left[0], top_left[1], top_left[0] + size[0], top_left[1] + size[1]))
     # cropped_image = jpg_image.crop(box=(0, 0, 100, 100))
     return cropped_image
@@ -82,18 +77,16 @@ def create_training_dataset():
 
                             meta = json.load(open(os.path.join(root, dirname, dirname2, meta_filename)))
                             bounding_box = meta['bounding_boxes'][0]['box']
-                            img = openJPGImg(os.path.join(root, dirname, dirname2, img_filename)).copy()
+                            img = openJPGImg(os.path.join(root, dirname, dirname2, img_filename))
                             img_size = img.size
-                            print(img_size)
-                            print(len(img))
 
                             img = crop((bounding_box[0], bounding_box[1]), (bounding_box[2], bounding_box[3]), img)
                             img = resample_picture(meta['gsd'], 1.7, img)
-                            if resized_img.size[0] > max_width:
-                                max_width = resized_img.size[0]
+                            if img.size[0] > max_width:
+                                max_width = img.size[0]
 
-                            if resized_img.size[1] > max_height:
-                                max_height = resized_img.size[1]
+                            if img.size[1] > max_height:
+                                max_height = img.size[1]
                             # # print len(list(resized_img.getdata()))
                             # padded_data = np.zeros((2500, 2500, 3))
                             # padded_data[:resized_img.size[1], :resized_img.size[0] , :] = np.array(resized_img.getdata()).reshape(resized_img.size[1], resized_img.size[0], 3)
@@ -151,4 +144,4 @@ def create_neural_net():
 
 # model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-# create_training_dataset()
+create_training_dataset()
