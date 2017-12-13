@@ -97,7 +97,6 @@ def create_training_dataset():
             training_data = np.array(training_data)
             np.save("processed_data/resized_img_data_val_" + dirname, training_data)
 
-create_training_dataset()
 
 def make_training_matrices():
     root = './processed_data'
@@ -127,7 +126,7 @@ def make_training_matrices():
         np.save('training_data', training_data)
         np.save('training_labels', training_labels)
 
-make_training_matrices()
+
 # a = np.load('resized_img_data_training_airport.npy')
 # print a.shape
 # #
@@ -144,4 +143,4 @@ def create_neural_net():
 
 # model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-create_training_dataset()
+
